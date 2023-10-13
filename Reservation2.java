@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reservation2 {
 
 	private Integer roomNumber;
@@ -12,8 +14,12 @@ public class Reservation2 {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // statci para instanciar so uma vex
 
-	public Reservation2(Integer roomNumber, Date checkIn, Date checkOut) {
+	public Reservation2(Integer roomNumber, Date checkIn, Date checkOut) throws DomainException {
 
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("Error in reservations: Check-out date must be after check in date!");
+		} 
+		
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -41,20 +47,20 @@ public class Reservation2 {
 		return TimeUnit.DAYS.convert(diff,TimeUnit.MILLISECONDS); // converter para dias!!
 	}
 	
-	public String updateDates(Date checkIn, Date checkOut) {
+	public void updateDates(Date checkIn, Date checkOut) throws DomainException{
 
 
 		Date now = new Date();
 		if (!checkOut.after(checkIn)) {
-			return "Error in reservations: Check-out date must be after check in date!";
+			throw new DomainException("Error in reservations: Check-out date must be after check in date!");
 		} 
 		if (checkIn.before(now) || checkOut.before(now)) {
-			return "Error in reservations: Dates must be after now!!!";
+			throw new DomainException("Error in reservations: Dates must be after now!!!");
 		} 
 		 
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		return null; // nao deu erro!!
+		
 	}
 	
 	@Override
